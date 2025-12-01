@@ -23,19 +23,19 @@ Le daily log est un outil de **réflexion**, de **suivi de progression** et de *
 ## ✍️ Format du daily (à remplir chaque soir)
 
 - ✅ **1 chose que j’ai bien comprise aujourd’hui :**  
-  _Votre réponse ici_
+  _Ce que nous avons assimilé aujourd'hui est que TailWind est plus permissif et permet d'être plus créatif sans être bloqué par rapport à BootStrap et FlexBox._
 
 - ⚠️ **1 difficulté majeure rencontrée :**  
-  _Votre réponse ici_
+  _Les difficultés majeurs ont été sur les technologies de FlexBox et BootStrap de par leur compléxité._
 
 - ❓ **1 question pour demain :**  
-  _Votre question ici_
+  _Comment ajuster notre colorimétrie pour la rendre la plus accessible possible._
 
 - 💡 **1 chose que je ferais autrement la prochaine fois :**  
   _Votre réponse ici_
 
 - 🤝 **Comment s’est passée la collaboration dans l’équipe ?**  
-  _Votre retour ici_
+  _Nous avons plutôt bien collaboré dans l'ensemble mais avec certaine complexité étant donné que nous étions pas sur la même technologie et que chacun devait avancer avec sa technologie et non pas ensemble._
 
 ---
 
