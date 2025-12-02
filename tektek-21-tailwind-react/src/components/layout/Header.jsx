@@ -21,7 +21,7 @@ export default function Header() {
               Collaborateurs
             </Link>
             <Link to="/donner" className="text-gray-700 hover:text-green-600 font-medium transition-colors duration-200">
-              Tous les dons
+              Donner
             </Link>
             <Link to="/contact" className="text-gray-700 hover:text-green-600 font-medium transition-colors duration-200">
               Contact
