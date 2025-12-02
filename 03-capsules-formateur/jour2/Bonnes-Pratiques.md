@@ -1,5 +1,4 @@
 # ✅ Bonnes pratiques — Structure propre et scalable
-# ✅ Bonnes pratiques — Structure propre et scalable
 
 Voici les **bonnes pratiques professionnelles** pour mettre en place une structure React claire, maintenable et évolutive.
 
