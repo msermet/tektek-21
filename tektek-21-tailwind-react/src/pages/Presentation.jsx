@@ -223,12 +223,12 @@ export default function Presentation() {
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
               <Link to="/donner">
-                <Button variant="outline" className="bg-green text-green-600 hover:bg-white hover:text-green-700 px-8 py-4 text-lg font-bold">
+                <Button className="bg-white text-green-600 hover:bg-green-50 px-8 py-4 text-lg font-bold">
                   Faire un don maintenant
                 </Button>
               </Link>
               <Link to="/contact">
-                <Button variant="outline" className="px-8 py-4 text-lg font-bold">
+                <Button className="bg-emerald-500 text-white hover:bg-emerald-600 px-8 py-4 text-lg font-bold">
                   En savoir plus
                 </Button>
               </Link>
