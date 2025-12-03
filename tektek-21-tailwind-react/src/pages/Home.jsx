@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import HeroSection from '../components/common/HeroSection';
 import DonationCard from '../components/common/DonationCard';
 import Button from '../components/ui/Button';
@@ -62,7 +63,9 @@ export default function Home() {
         </div>
 
         <div className="text-center mt-12">
-          <Button variant="secondary">Voir tous les dons</Button>
+          <Link to="/tous-les-dons">
+            <Button variant="secondary">Voir tous les dons</Button>
+          </Link>
         </div>
       </main>
     </>

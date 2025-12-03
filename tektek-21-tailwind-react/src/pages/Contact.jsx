@@ -223,7 +223,7 @@ export default function Contact() {
               Faites partie de notre communauté et donnez une seconde vie à vos appareils
             </p>
             <Link to="/donner">
-              <Button variant="outline" className="bg-white text-green-600 hover:bg-white hover:text-green-700 px-8 py-4 text-lg font-bold inline-block">
+              <Button className="bg-white text-green-600 hover:bg-white hover:text-green-700 px-8 py-4 text-lg font-bold inline-block">
                 Faire un don maintenant
               </Button>
             </Link>
