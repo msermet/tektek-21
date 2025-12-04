@@ -21,6 +21,7 @@ Dans cette capsule, les apprenants vont créer une **mini-application React** af
 
 Un repository GitHub contenant l’exercice du jour :
 
+```bash
 profile-cards/
 ├── src/
 │ ├── components/ProfileCard.jsx
@@ -28,7 +29,7 @@ profile-cards/
 │ ├── App.jsx
 │ └── styles.css (si utilisé)
 └── README.md (optionnel)
-
+```
 
 ---
 
@@ -46,7 +47,7 @@ Choisir React + JavaScript.
 
 Nettoyer le fichier App.jsx :
 
-```bash
+```javascript
 import './App.css'
 
 function App() {
@@ -62,18 +63,35 @@ export default App;
 2️⃣ Créer le composant ProfileCard.jsx
 🔹 Un composant = une fonction
 
-```bash
+```javascript
 export default function ProfileCard() {
   return (
     <div>Profil</div>
   );
 }
 ```
+
+2️⃣ Puis ajouter le dans `App.jsx`
+
+```javascript
+import './App.css'
+import ProfileCard from "./components/ProfileCard"
+
+function App() {
+  return (
+    <>
+      <h1>Bonjour</h1>
+      <ProfileCard />
+    </>
+  );
+}
+
+```
+
 2️⃣ Les props : données reçues depuis le parent
 
-
-```bash
-export default function ProfileCard(img, name, role, description) {
+```javascript
+export default function ProfileCard({ img, name, role, description }) {
   return (
     <div>Profil</div>
   );
@@ -85,9 +103,8 @@ Ici on utilise la déstructuration, ce qui évite d’écrire props.img, props.n
 <div className="p-4 border rounded-lg shadow-sm bg-white max-w-xs">
 
 4️⃣ Affichage de l’image
- 
 
- ```bash
+ ```javascript
 <img
   src={img}
   alt={name}
@@ -96,17 +113,17 @@ Ici on utilise la déstructuration, ce qui évite d’écrire props.img, props.n
 ```
 img vient des props
 5️⃣ Affichage du texte
-*
- ```bash
+
+ ```javascript
 <h2 className="text-xl font-semibold mt-3">{name}</h2>
 <p className="text-sm text-gray-600">{role}</p>
 <p className="text-gray-700 mt-2 text-sm">{description}</p>
-/>
 ```
 Le JSX permet de mettre des valeurs dynamiques entre {}.
 
 6️⃣ Bouton « Voir plus »
- ```bash
+
+ ```javascript
 <button className="mt-4 px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
   Voir plus
 </button>
@@ -114,7 +131,7 @@ Le JSX permet de mettre des valeurs dynamiques entre {}.
 ```
 ## BONUS : Version avancée (teaser pour Jour 3)
 
- ```bash
+ ```javascript
 // -------------------------------------------
 // ProfileCard.jsx
 // Un composant fonctionnel qui reçoit des props
@@ -159,7 +176,7 @@ export default function ProfileCard({ img, name, role, description }) {
 ## Explications
 🔹 useState
 
-const [VoirPlus, setVoirPlus] = useState(false);
+`const [VoirPlus, setVoirPlus] = useState(false);`
 
 VoirPlus : valeur actuelle
 setVoirPlus : fonction qui modifie la valeur

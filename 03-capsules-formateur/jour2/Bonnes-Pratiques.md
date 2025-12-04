@@ -1,5 +1,6 @@
 # ✅ Bonnes pratiques — Structure propre et scalable
 
+
 Voici les **bonnes pratiques professionnelles** pour mettre en place une structure React claire, maintenable et évolutive.
 
 ---
@@ -147,4 +148,5 @@ responsive facile à ajouter plus tard
 
 « Une structure propre dès le début évite 80% des problèmes plus tard.
 Les bons composants sont simples, atomiques, et organisés dans des dossiers cohérents.
+
 Ce que vous mettez en place aujourd’hui servira toute l’année. »
