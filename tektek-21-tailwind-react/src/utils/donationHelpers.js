@@ -52,5 +52,11 @@ export function transformFormDonationToCard(formDonation) {
 
 export function getAllDonations(localStorageDonations, staticDonations) {
   const transformedUserDonations = localStorageDonations.map(transformFormDonationToCard);
-  return [...transformedUserDonations, ...staticDonations];
+
+  const staticDonationsWithDate = staticDonations.map((donation, index) => ({
+    ...donation,
+    date: donation.date || new Date(Date.now() - (index + 1) * 86400000).toISOString()
+  }));
+
+  return [...transformedUserDonations, ...staticDonationsWithDate];
 }
