@@ -24,9 +24,9 @@ export function transformFormDonationToCard(formDonation) {
   };
 
   const placeholderImages = {
-    'Ordinateur': 'https://via.placeholder.com/400x250/10b981/FFFFFF?text=Ordinateur',
-    'Smartphone': 'https://via.placeholder.com/400x250/059669/FFFFFF?text=Smartphone',
-    'Tablette': 'https://via.placeholder.com/400x250/047857/FFFFFF?text=Tablette'
+    'Ordinateur': 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=250&fit=crop&q=80',
+    'Smartphone': 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=250&fit=crop&q=80',
+    'Tablette': 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=250&fit=crop&q=80'
   };
 
   const mappedType = typeMapping[formDonation.typeAppareil] || 'Ordinateur';
