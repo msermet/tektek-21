@@ -2,9 +2,12 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import StepCard from '../components/common/StepCard';
 import Button from '../components/ui/Button';
+import { organizations } from '../data/organizations';
+import useLocalStorage from '../hooks/useLocalStorage';
 
 export default function Donner() {
   const navigate = useNavigate();
+  const [donations, setDonations] = useLocalStorage('donations', []);
   const [prenom, setPrenom] = useState("");
   const [nom, setNom] = useState("");
   const [email, setEmail] = useState("");
@@ -16,64 +19,62 @@ export default function Donner() {
   const [description, setDescription] = useState("");
   const [association, setAssociation] = useState("");
   const [accepteConditions, setAccepteConditions] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [imageBase64, setImageBase64] = useState(null);
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5000000) {
+        alert("L'image est trop volumineuse. Taille maximum : 5MB");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImageBase64(reader.result);
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = () => {
+    setImagePreview(null);
+    setImageBase64(null);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!prenom.trim()) {
-      alert("Le prénom est requis");
-      return;
-    }
+    const avatarGradients = ['green', 'blue', 'purple', 'pink', 'indigo', 'teal'];
+    const badgeColors = ['green', 'emerald', 'teal'];
+    const randomGradient = avatarGradients[Math.floor(Math.random() * avatarGradients.length)];
+    const randomBadgeColor = badgeColors[Math.floor(Math.random() * badgeColors.length)];
 
-    if (!nom.trim()) {
-      alert("Le nom est requis");
-      return;
-    }
+    const newDonation = {
+      id: Date.now(),
+      prenom,
+      nom,
+      email,
+      telephone,
+      typeAppareil,
+      marque,
+      modele,
+      etatAppareil,
+      description,
+      association,
+      image: imageBase64,
+      avatarGradient: randomGradient,
+      badgeColor: randomBadgeColor,
+      date: new Date().toISOString(),
+      status: 'En attente'
+    };
 
-    if (!email.trim()) {
-      alert("L'email est requis");
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      alert("L'email n'est pas valide");
-      return;
-    }
-
-    if (!typeAppareil || typeAppareil === "Sélectionnez un type") {
-      alert("Le type d'appareil est requis");
-      return;
-    }
-
-    if (!etatAppareil || etatAppareil === "Sélectionnez l'état") {
-      alert("L'état de l'appareil est requis");
-      return;
-    }
-
-    if (!association) {
-      alert("Veuillez sélectionner une association bénéficiaire");
-      return;
-    }
-
-    if (!accepteConditions) {
-      alert("Vous devez accepter les conditions générales d'utilisation");
-      return;
-    }
-
-    console.log("Prénom:", prenom);
-    console.log("Nom:", nom);
-    console.log("Email:", email);
-    console.log("Téléphone:", telephone);
-    console.log("Type d'appareil:", typeAppareil);
-    console.log("Marque:", marque);
-    console.log("Modèle:", modele);
-    console.log("État:", etatAppareil);
-    console.log("Description:", description);
-    console.log("Association:", association);
+    setDonations([...donations, newDonation]);
 
     alert("Votre don a été enregistré avec succès !");
-    navigate("/");
+    navigate("/tous-les-dons");
   };
 
   return (
@@ -102,7 +103,7 @@ export default function Donner() {
               <div className="text-center mb-12">
                 <span className="text-green-600 font-semibold text-sm uppercase tracking-wide">Formulaire de don</span>
                 <h3 className="text-3xl font-bold text-gray-800 mt-3 mb-4">Créez votre annonce de don</h3>
-                <p className="text-gray-600">Remplissez le formulaire ci-dessous pour faire don de votre appareil</p>
+                <p className="text-gray-600 mb-2">Remplissez le formulaire ci-dessous pour faire don de votre appareil</p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-8">
@@ -114,6 +115,7 @@ export default function Donner() {
                       placeholder="Jean"
                       value={prenom}
                       onChange={(e) => setPrenom(e.target.value)}
+                      required
                       className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:outline-none transition-colors duration-200"
                     />
                   </div>
@@ -124,6 +126,7 @@ export default function Donner() {
                       placeholder="Dupont"
                       value={nom}
                       onChange={(e) => setNom(e.target.value)}
+                      required
                       className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:outline-none transition-colors duration-200"
                     />
                   </div>
@@ -136,6 +139,7 @@ export default function Donner() {
                     placeholder="jean.dupont@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    required
                     className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:outline-none transition-colors duration-200"
                   />
                 </div>
@@ -160,9 +164,10 @@ export default function Donner() {
                       <select
                         value={typeAppareil}
                         onChange={(e) => setTypeAppareil(e.target.value)}
+                        required
                         className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:outline-none transition-colors duration-200"
                       >
-                        <option>Sélectionnez un type</option>
+                        <option value="">Sélectionnez un type</option>
                         <option>Ordinateur portable</option>
                         <option>Ordinateur fixe</option>
                         <option>Smartphone</option>
@@ -201,9 +206,10 @@ export default function Donner() {
                       <select
                         value={etatAppareil}
                         onChange={(e) => setEtatAppareil(e.target.value)}
+                        required
                         className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:outline-none transition-colors duration-200"
                       >
-                        <option>Sélectionnez l'état</option>
+                        <option value="">Sélectionnez l'état</option>
                         <option>Comme neuf</option>
                         <option>Très bon état</option>
                         <option>Bon état</option>
@@ -224,128 +230,68 @@ export default function Donner() {
                     </div>
 
                     <div>
-                      <label className="block text-gray-700 font-semibold mb-2">Photos de l'appareil</label>
-                      <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-green-500 transition-colors duration-200 cursor-pointer">
-                        <svg className="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        <p className="text-gray-600 mb-2">Cliquez pour télécharger ou glissez-déposez</p>
-                        <p className="text-sm text-gray-400">PNG, JPG jusqu'à 10MB</p>
-                      </div>
+                      <label className="block text-gray-700 font-semibold mb-2">Photo de l'appareil</label>
+                      {!imagePreview ? (
+                        <label className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-green-500 transition-colors duration-200 cursor-pointer block">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            className="hidden"
+                          />
+                          <svg className="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          <p className="text-gray-600 mb-2">Cliquez pour télécharger une photo</p>
+                          <p className="text-sm text-gray-400">PNG, JPG jusqu'à 5MB</p>
+                        </label>
+                      ) : (
+                        <div className="relative border-2 border-gray-200 rounded-xl overflow-hidden">
+                          <img src={imagePreview} alt="Aperçu" className="w-full h-64 object-cover" />
+                          <button
+                            type="button"
+                            onClick={removeImage}
+                            className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </div>
+                      )}
                     </div>
+
                   </div>
                 </div>
 
                 <div className="border-t pt-8">
-                  <h4 className="text-xl font-bold text-gray-800 mb-6">Choisissez votre association</h4>
+                  <h4 className="text-xl font-bold text-gray-800 mb-6">Choisissez votre association *</h4>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <label className="relative cursor-pointer">
-                      <input
-                        type="radio"
-                        name="association"
-                        value="Les Restos du Cœur"
-                        checked={association === "Les Restos du Cœur"}
-                        onChange={(e) => setAssociation(e.target.value)}
-                        className="peer sr-only"
-                      />
-                      <div className="p-4 rounded-xl border-2 border-gray-200 peer-checked:border-green-500 peer-checked:bg-green-50 transition-all duration-200 hover:shadow-md">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center text-white font-bold text-lg">
-                            RC
-                          </div>
-                          <div>
-                            <p className="font-semibold text-gray-800">Les Restos du Cœur</p>
-                            <p className="text-sm text-gray-500">247 appareils reçus</p>
-                          </div>
-                        </div>
-                      </div>
-                    </label>
-
-                    <label className="relative cursor-pointer">
-                      <input
-                        type="radio"
-                        name="association"
-                        value="Emmaüs France"
-                        checked={association === "Emmaüs France"}
-                        onChange={(e) => setAssociation(e.target.value)}
-                        className="peer sr-only"
-                      />
-                      <div className="p-4 rounded-xl border-2 border-gray-200 peer-checked:border-green-500 peer-checked:bg-green-50 transition-all duration-200 hover:shadow-md">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center text-white font-bold text-lg">
-                            E
-                          </div>
-                          <div>
-                            <p className="font-semibold text-gray-800">Emmaüs France</p>
-                            <p className="text-sm text-gray-500">189 appareils reçus</p>
+                    {organizations.map((org) => (
+                      <label key={org.name} className="relative cursor-pointer">
+                        <input
+                          type="radio"
+                          name="association"
+                          value={org.name}
+                          checked={association === org.name}
+                          onChange={(e) => setAssociation(e.target.value)}
+                          required
+                          className="peer sr-only"
+                        />
+                        <div className="p-4 rounded-xl border-2 border-gray-200 peer-checked:border-green-500 peer-checked:bg-green-50 transition-all duration-200 hover:shadow-md">
+                          <div className="flex items-center space-x-3">
+                            <div className={`w-12 h-12 ${org.gradient} rounded-xl flex items-center justify-center text-white font-bold text-lg`}>
+                              {org.initials}
+                            </div>
+                            <div>
+                              <p className="font-semibold text-gray-800">{org.name}</p>
+                              <p className="text-sm text-gray-500">{org.devicesCount} appareils reçus</p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </label>
-
-                    <label className="relative cursor-pointer">
-                      <input
-                        type="radio"
-                        name="association"
-                        value="Secours Populaire"
-                        checked={association === "Secours Populaire"}
-                        onChange={(e) => setAssociation(e.target.value)}
-                        className="peer sr-only"
-                      />
-                      <div className="p-4 rounded-xl border-2 border-gray-200 peer-checked:border-green-500 peer-checked:bg-green-50 transition-all duration-200 hover:shadow-md">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-lg">
-                            SP
-                          </div>
-                          <div>
-                            <p className="font-semibold text-gray-800">Secours Populaire</p>
-                            <p className="text-sm text-gray-500">156 appareils reçus</p>
-                          </div>
-                        </div>
-                      </div>
-                    </label>
-
-                    <label className="relative cursor-pointer">
-                      <input
-                        type="radio"
-                        name="association"
-                        value="Croix-Rouge Française"
-                        checked={association === "Croix-Rouge Française"}
-                        onChange={(e) => setAssociation(e.target.value)}
-                        className="peer sr-only"
-                      />
-                      <div className="p-4 rounded-xl border-2 border-gray-200 peer-checked:border-green-500 peer-checked:bg-green-50 transition-all duration-200 hover:shadow-md">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center text-white font-bold text-lg">
-                            CR
-                          </div>
-                          <div>
-                            <p className="font-semibold text-gray-800">Croix-Rouge Française</p>
-                            <p className="text-sm text-gray-500">134 appareils reçus</p>
-                          </div>
-                        </div>
-                      </div>
-                    </label>
-
-                    <label className="relative cursor-pointer md:col-span-2">
-                      <input
-                        type="radio"
-                        name="association"
-                        value="Autres associations"
-                        checked={association === "Autres associations"}
-                        onChange={(e) => setAssociation(e.target.value)}
-                        className="peer sr-only"
-                      />
-                      <div className="p-4 rounded-xl border-2 border-gray-200 peer-checked:border-green-500 peer-checked:bg-green-50 transition-all duration-200 hover:shadow-md">
-                        <div className="flex items-center justify-center space-x-3">
-                          <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                          </svg>
-                          <p className="font-semibold text-gray-800">Voir toutes les associations (89)</p>
-                        </div>
-                      </div>
-                    </label>
+                      </label>
+                    ))}
                   </div>
                 </div>
                 <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 sm:space-x-4 pt-6">
