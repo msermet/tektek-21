@@ -1,19 +1,87 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import DonationCard from '../components/common/DonationCard';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import { allDonations } from '../data/donations';
+import useLocalStorage from '../hooks/useLocalStorage';
+import { getAllDonations } from '../utils/donationHelpers';
+import EditDonationModal from '../components/modals/EditDonationModal';
 
 export default function TousLesDons() {
   const [selectedType, setSelectedType] = useState('Tous');
   const [selectedState, setSelectedState] = useState('Tous');
+  const [userDonations, setUserDonations] = useLocalStorage('donations', []);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingDonation, setEditingDonation] = useState(null);
 
-  const filteredDonations = allDonations.filter(donation => {
+  useEffect(() => {
+    const avatarGradients = ['green', 'blue', 'purple', 'pink', 'indigo', 'teal'];
+    const badgeColors = ['green', 'emerald', 'teal'];
+
+    if (userDonations.length === 0) return;
+
+    let needsUpdate = false;
+    const updatedDonations = userDonations.map(donation => {
+      if (!donation.avatarGradient || !donation.badgeColor) {
+        needsUpdate = true;
+        return {
+          ...donation,
+          avatarGradient: donation.avatarGradient || avatarGradients[Math.floor(Math.random() * avatarGradients.length)],
+          badgeColor: donation.badgeColor || badgeColors[Math.floor(Math.random() * badgeColors.length)]
+        };
+      }
+      return donation;
+    });
+
+    if (needsUpdate) {
+      setUserDonations(updatedDonations);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const combinedDonations = getAllDonations(userDonations, allDonations);
+
+  const filteredDonations = combinedDonations.filter(donation => {
     const typeMatch = selectedType === 'Tous' || donation.type === selectedType;
     const stateMatch = selectedState === 'Tous' || donation.state === selectedState;
     return typeMatch && stateMatch;
   });
+
+  const handleEdit = (donationId) => {
+    const rawDonation = userDonations.find(d => d.id === donationId);
+    const transformedDonation = combinedDonations.find(d => d.id === donationId);
+
+    if (rawDonation && transformedDonation) {
+      setEditingDonation({
+        ...rawDonation,
+        avatarGradient: transformedDonation.avatarGradient,
+        badgeColor: transformedDonation.badgeColor
+      });
+      setIsEditModalOpen(true);
+    }
+  };
+
+  const handleDelete = (donationId) => {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer ce don ?')) {
+      const updatedDonations = userDonations.filter(d => d.id !== donationId);
+      setUserDonations(updatedDonations);
+    }
+  };
+
+  const handleSaveEdit = (updatedDonation) => {
+    const updatedDonations = userDonations.map(d =>
+      d.id === updatedDonation.id ? updatedDonation : d
+    );
+    setUserDonations(updatedDonations);
+    setIsEditModalOpen(false);
+    setEditingDonation(null);
+  };
+
+  const handleCloseModal = () => {
+    setIsEditModalOpen(false);
+    setEditingDonation(null);
+  };
 
   return (
     <>
@@ -42,7 +110,10 @@ export default function TousLesDons() {
                 <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                 </svg>
-                <h3 className="text-lg font-bold text-gray-800">Filtrer les dons</h3>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-800">Filtrer les dons</h3>
+                  <p className="text-sm text-gray-500">{combinedDonations.length} don{combinedDonations.length > 1 ? 's' : ''} disponible{combinedDonations.length > 1 ? 's' : ''}</p>
+                </div>
               </div>
 
               <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
@@ -71,6 +142,8 @@ export default function TousLesDons() {
                     <option>Comme neuf</option>
                     <option>Très bon état</option>
                     <option>Bon état</option>
+                    <option>État correct</option>
+                    <option>En panne</option>
                   </select>
                 </div>
               </div>
@@ -89,8 +162,13 @@ export default function TousLesDons() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredDonations.map((donation, index) => (
-                <DonationCard key={index} {...donation} />
+              {filteredDonations.map((donation) => (
+                <DonationCard
+                  key={donation.id || donation.title}
+                  {...donation}
+                  onEdit={() => handleEdit(donation.id)}
+                  onDelete={() => handleDelete(donation.id)}
+                />
               ))}
             </div>
           )}
@@ -108,6 +186,14 @@ export default function TousLesDons() {
           </div>
         </section>
       </main>
+
+      {isEditModalOpen && editingDonation && (
+        <EditDonationModal
+          donation={editingDonation}
+          onSave={handleSaveEdit}
+          onClose={handleCloseModal}
+        />
+      )}
     </>
   );
 }
