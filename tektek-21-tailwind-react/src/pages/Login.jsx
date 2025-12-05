@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Login() {
     const navigate = useNavigate();
+    const { login } = useAuth();
     const [email, setEmail] = useState("");
     const [motDePasse, setMotDePasse] = useState("");
 
@@ -25,11 +27,14 @@ export default function Login() {
             return;
         }
 
-        console.log("Email:", email);
-        console.log("Mot de passe:", motDePasse);
+        const result = login(email, motDePasse);
 
-        alert("Connexion réussie !");
-        navigate("/");
+        if (result.success) {
+            alert("Connexion réussie !");
+            navigate("/");
+        } else {
+            alert(result.message);
+        }
     };
 
     return (
