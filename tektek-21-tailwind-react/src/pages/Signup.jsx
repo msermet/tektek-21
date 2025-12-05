@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Signup() {
     const navigate = useNavigate();
+    const { register } = useAuth();
     const [nom, setNom] = useState("");
     const [email, setEmail] = useState("");
     const [motDePasse, setMotDePasse] = useState("");
@@ -47,12 +49,18 @@ export default function Signup() {
             return;
         }
 
-        console.log("Nom:", nom);
-        console.log("Email:", email);
-        console.log("Mot de passe:", motDePasse);
+        const result = register({
+            nom,
+            email,
+            password: motDePasse
+        });
 
-        alert("Inscription réussie !");
-        navigate("/");
+        if (result.success) {
+            alert("Inscription réussie ! Vous êtes maintenant connecté.");
+            navigate("/");
+        } else {
+            alert(result.message);
+        }
     };
 
     return (
